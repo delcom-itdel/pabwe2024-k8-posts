@@ -1,9 +1,8 @@
-# Kelompok 8 - Posts
+# React + Vite
 
-| NIM      | Nama              |
-|----------|-------------------|
-| 11S22021 | Rachel Nababan    |
-| 11S22022 | Grace Simanullang |
-| 11S22048 | Angel Lubis       |
-| 11S22051 | Nadia Sirait      |
-| 11S22052 | Agnes Naibaho     |
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh

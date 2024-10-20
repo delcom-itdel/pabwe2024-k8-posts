@@ -1,4 +1,4 @@
-# Delta Course
+# POSTS
 
 ## Logs
 
@@ -8,7 +8,7 @@
   <li> Pembuatan Api.js
 </ol>
 
-# Kelompok 1 - Courses
+# Kelompok 8 - Posts
 
 | NIM      | Nama                |
 | -------- | ------------------- |

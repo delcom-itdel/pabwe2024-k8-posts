@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import api from '../utils/api';
+import React, { useState } from "react";
+import api from "../utils/api";
 
 const AddNewPostForm = () => {
   const [cover, setCover] = useState(null);
-  const [description, setDescription] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [description, setDescription] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleAddPost = async (event) => {
     event.preventDefault();
@@ -17,22 +17,33 @@ const AddNewPostForm = () => {
   };
 
   return (
-    <form onSubmit={handleAddPost}>
-      <div>
-        <label>Cover Image:</label>
-        <input type="file" onChange={(e) => setCover(e.target.files[0])} />
+    <form onSubmit={handleAddPost} className="container mt-5">
+      <div className="form-group">
+        <label htmlFor="cover">Cover Image:</label>
+        <input
+          type="file"
+          id="cover"
+          className="form-control-file"
+          onChange={(e) => setCover(e.target.files[0])}
+        />
       </div>
-      <div>
-        <label>Description:</label>
+      <div className="form-group">
+        <label htmlFor="description">Description:</label>
         <input
           type="text"
+          id="description"
+          className="form-control"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter post description"
         />
       </div>
-      <button type="submit">Add Post</button>
-      {successMessage && <p>{successMessage}</p>}
+      <button type="submit" className="btn btn-primary">
+        Add Post
+      </button>
+      {successMessage && (
+        <div className="alert alert-success mt-3">{successMessage}</div>
+      )}
     </form>
   );
 };

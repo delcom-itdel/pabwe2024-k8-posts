@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../utils/api"; // Import API untuk mengambil data postingan dan add like
+import api from "../utils/api"; // Import API untuk mengambil data postingan, add like, dan delete post
 import { Link } from "react-router-dom"; // Import Link untuk navigasi ke detail postingan
 
 const PostList = () => {
@@ -8,7 +8,7 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const fetchedPosts = await api.getAllPosts(1);
+        const fetchedPosts = await api.getAllPosts(1); // Ambil post milik user
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Gagal mengambil data postingan:", error.message);
@@ -21,16 +21,30 @@ const PostList = () => {
   const handleLike = async (postId, isLiked) => {
     try {
       const likeStatus = isLiked ? 0 : 1; // 1 untuk like, 0 untuk unlike
-      await api.addLike({ postId, like: likeStatus });
+      await api.addLike({ id: postId, like: likeStatus });
       alert(`Like ${isLiked ? "dihapus" : "ditambahkan"}!`);
 
-      // Optional: refresh the post list after like/unlike
+      // Update status like pada post di state
       const updatedPosts = posts.map((post) =>
         post.id === postId ? { ...post, isLiked: !isLiked } : post
       );
       setPosts(updatedPosts);
     } catch (error) {
       console.error("Gagal mengubah status like:", error.message);
+    }
+  };
+
+  // Fungsi untuk menghapus post
+  const handleDeletePost = async (postId) => {
+    try {
+      await api.deletePost(postId); // Panggil API untuk menghapus post
+      alert("Post berhasil dihapus!");
+
+      // Update daftar post di state setelah dihapus
+      const updatedPosts = posts.filter((post) => post.id !== postId);
+      setPosts(updatedPosts);
+    } catch (error) {
+      console.error("Gagal menghapus posting:", error.message);
     }
   };
 
@@ -57,6 +71,13 @@ const PostList = () => {
               <Link to={`/posts/${post.id}`} className="btn btn-link">
                 View Details
               </Link>
+              {/* Tombol Delete Post */}
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                className="btn btn-danger"
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))

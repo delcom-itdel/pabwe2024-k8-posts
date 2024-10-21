@@ -4,14 +4,26 @@ import api from '../api/api';
 const UpdatePostForm = ({ postId }) => {
   const [description, setDescription] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleUpdatePost = async (event) => {
     event.preventDefault();
+    
+    // Validasi input
+    if (!description.trim()) {
+      setErrorMessage('Deskripsi tidak boleh kosong!');
+      return;
+    }
+
     try {
       await api.updatePost({ postId, description });
       setSuccessMessage('Deskripsi berhasil diupdate!');
+      setErrorMessage(''); // Reset error message
+      setDescription(''); // Reset input field
     } catch (error) {
       console.error("Gagal mengupdate deskripsi:", error.message);
+      setErrorMessage('Gagal mengupdate deskripsi. Silakan coba lagi.');
+      setSuccessMessage(''); // Reset success message
     }
   };
 
@@ -27,7 +39,8 @@ const UpdatePostForm = ({ postId }) => {
         />
       </div>
       <button type="submit">Update Post</button>
-      {successMessage && <p>{successMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </form>
   );
 };

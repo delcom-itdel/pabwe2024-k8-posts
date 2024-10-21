@@ -10,10 +10,10 @@
 
 # Kelompok 8 - Posts
 
-| NIM      | Nama              |
-| -------- | ----------------- |
-| 11S22021 | Rachel Nababan    |
-| 11S22022 | Grace Simanullang |
-| 11S22048 | Angel Lubis       |
-| 11S22051 | Nadia Sirait      |
-| 11S22052 | Agnes Naibaho     |
+| NIM      | Nama              | Username GitHub |
+| -------- | ----------------- | --------------- |
+| 11S22021 | Rachel Nababan    | RachelNababan   |
+| 11S22022 | Grace Simanullang | grace24s        |
+| 11S22048 | Angel Lubis       | angellubis2404  |
+| 11S22051 | Nadia Sirait      | nadiagraciaa    |
+| 11S22052 | Agnes Naibaho     | agnesyosepha    |

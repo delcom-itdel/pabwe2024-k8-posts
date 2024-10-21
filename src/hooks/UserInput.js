@@ -22,5 +22,4 @@ function useUserInput(initialState = {}) {
     setUserInput,
   };
 }
-
 export default useUserInput;

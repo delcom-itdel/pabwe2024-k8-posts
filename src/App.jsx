@@ -12,6 +12,9 @@ import NotFoundPage from "./pages/NotFoundPage";
 import AddNewPostPage from "./pages/AddNewPostPage";
 import PostListPage from "./pages/PostListPage";
 import PostDetailPage from "./pages/PostDetailPage";
+import PostList from "./components/PostList";
+import UpdatePostForm from "./components/UpdatePostForm";
+import ProfilePage from "./pages/ProfilePage";
 function App() {
   const { authLogin = null, isPreload = false } = useSelector(
     (states) => states
@@ -80,7 +83,10 @@ ${activeRegister} btl`}
           <Routes>
             <Route path="/*" element={<NotFoundPage />} />
             <Route path="/" element={<HomePage />} />
+            <Route path="/users/me" element={<ProfilePage />} />
             <Route path="/" element={<PostListPage />} />
+            <Route path="/" element={<PostList />} />
+            {/* <Route path="/posts/:id" element={<UpdatePostForm/>} /> */}
             <Route path="/posts/:id" element={<PostDetailPage />} />
             <Route path="/posts/add" element={<AddNewPostPage />} />
           </Routes>

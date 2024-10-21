@@ -1,49 +1,50 @@
 import React, { useState } from "react";
 import api from "../utils/api";
 
-const AddNewPostForm = () => {
+const AddNewPostForm = ({ onPostAdded }) => {
+  const [title, setTitle] = useState("");
   const [cover, setCover] = useState(null);
   const [description, setDescription] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleAddPost = async (event) => {
     event.preventDefault();
+
     try {
-      const postId = await api.addNewPost({ cover, description });
-      setSuccessMessage(`Posting baru berhasil dibuat dengan ID: ${postId}`);
+      // Mengirim request untuk menambahkan post baru
+      const newPostId = await api.addNewPost({ title, cover, description });
+      setSuccessMessage("Post berhasil ditambahkan!");
+
+      // Reset form setelah post berhasil ditambahkan
+      setCover(null);
+      setDescription("");
+
+      // Memanggil callback setelah post berhasil ditambahkan
+      if (onPostAdded) {
+        onPostAdded(newPostId); // Opsional: update parent component atau redirect
+      }
     } catch (error) {
-      console.error("Gagal membuat posting baru:", error.message);
+      console.error("Gagal menambahkan post:", error.message);
     }
   };
 
   return (
-    <form onSubmit={handleAddPost} className="container mt-5">
-      <div className="form-group">
-        <label htmlFor="cover">Cover Image:</label>
-        <input
-          type="file"
-          id="cover"
-          className="form-control-file"
-          onChange={(e) => setCover(e.target.files[0])}
-        />
+    <form onSubmit={handleAddPost}>
+      <div>
+        <label>Cover Image:</label>
+        <input type="file" onChange={(e) => setCover(e.target.files[0])} />
       </div>
-      <div className="form-group">
-        <label htmlFor="description">Description:</label>
+      <div>
+        <label>Description:</label>
         <input
           type="text"
-          id="description"
-          className="form-control"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter post description"
         />
       </div>
-      <button type="submit" className="btn btn-primary">
-        Add Post
-      </button>
-      {successMessage && (
-        <div className="alert alert-success mt-3">{successMessage}</div>
-      )}
+      <button type="submit">Add Post</button>
+      {successMessage && <p>{successMessage}</p>}
     </form>
   );
 };

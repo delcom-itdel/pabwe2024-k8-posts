@@ -1,13 +1,17 @@
 import React from "react";
-import PostList from "../components/PostList";
+import { useParams } from "react-router-dom";
+import PostDetail from "../components/PostDetail"; // Komponen PostDetail
 
-const PostListPage = () => {
+const PostDetailPage = () => {
+  const { id } = useParams(); // Ambil id dari URL
+
   return (
     <div>
-      <h1>All Posts</h1>
-      <PostList />
+      <h1>Post Detail</h1>
+      <PostDetail id={id} />{" "}
+      {/* Berikan id sebagai props ke komponen PostDetail */}
     </div>
   );
 };
 
-export default PostListPage;
+export default PostDetailPage;

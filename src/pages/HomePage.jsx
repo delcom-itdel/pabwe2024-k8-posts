@@ -7,11 +7,6 @@ function HomePage() {
   return (
     <section>
       <div className="container pt-1">
-        <div className="card">
-          <div className="card-body">
-            <h3>Hello, {authLogin.name}</h3>
-          </div>
-        </div>
         {/* Tambahkan daftar posting di bawah form */}
         <div className="mt-4">
           <PostList /> {/* Komponen untuk menampilkan daftar posting */}

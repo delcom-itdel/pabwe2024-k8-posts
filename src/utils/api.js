@@ -182,7 +182,6 @@ const api = (() => {
   async function addLike({ id, like }) {
     const params = new URLSearchParams();
     params.append("like", like);
-
     const response = await _fetchWithAuth(`${BASE_URL}/posts/${id}/likes`, {
       method: "POST",
       headers: {
@@ -190,19 +189,15 @@ const api = (() => {
       },
       body: params,
     });
-
     const responseJson = await response.json();
     if (!responseJson.success) {
       throw new Error(responseJson.message);
     }
-
-    return responseJson.message;
   }
 
   async function addComment({ id, comment }) {
     const params = new URLSearchParams();
     params.append("comment", comment);
-
     const response = await _fetchWithAuth(`${BASE_URL}/posts/${id}/comments`, {
       method: "POST",
       headers: {
@@ -210,13 +205,10 @@ const api = (() => {
       },
       body: params,
     });
-
     const responseJson = await response.json();
     if (!responseJson.success) {
       throw new Error(responseJson.message);
     }
-
-    return responseJson.message;
   }
 
   async function deleteComment(id) {

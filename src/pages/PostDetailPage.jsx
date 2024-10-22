@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../utils/api";
-import UpdatePostForm from "../components/UpdatePostForm"; // Import untuk update post
-import ChangeCoverForm from "../components/ChangeCoverForm"; // Import untuk change cover
-import LikePostButton from "../components/LikePost"; // Import tombol like
-import CommentForm from "../components/CommentForm"; // Import form komentar
-import CommentList from "../components/CommentList"; // Import list komentar
+import UpdatePostForm from "../components/UpdatePostForm";
+import ChangeCoverForm from "../components/ChangeCoverForm";
+import LikePostButton from "../components/LikePost";
+import CommentForm from "../components/CommentForm";
+import CommentList from "../components/CommentList";
 
 const PostDetailPage = () => {
   const { id } = useParams(); // Mengambil postId dari URL
@@ -65,6 +65,23 @@ const PostDetailPage = () => {
     }));
   };
 
+  const handleDeleteComment = async (commentIndex) => {
+    try {
+      // Hapus komentar melalui API (tambahkan endpoint API sesuai kebutuhan)
+      await api.deleteComment(post.id, commentIndex);
+
+      // Update state setelah komentar dihapus
+      setPost((prevPost) => ({
+        ...prevPost,
+        comments: prevPost.comments.filter(
+          (_, index) => index !== commentIndex
+        ),
+      }));
+    } catch (error) {
+      console.error("Failed to delete comment:", error.message);
+    }
+  };
+
   return (
     <div className="container mt-4">
       <h1>Post Detail</h1>
@@ -103,6 +120,15 @@ const PostDetailPage = () => {
           {isEditingCover && (
             <ChangeCoverForm id={post.id} onUpdateCover={handleUpdateCover} />
           )}
+
+          {/* Daftar Komentar */}
+          <CommentList
+            comments={post.comments}
+            onDeleteComment={handleDeleteComment} // Kirim fungsi delete ke CommentList
+          />
+
+          {/* Form Tambah Komentar */}
+          <CommentForm id={post.id} onCommentAdded={handleCommentAdded} />
         </div>
       </div>
     </div>

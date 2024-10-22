@@ -1,23 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../utils/api";
 
-const CommentForm = ({ postId, onCommentAdded }) => {
+const CommentForm = ({ id, onCommentAdded }) => {
   const [comment, setComment] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleAddComment = async (event) => {
     event.preventDefault();
     if (!comment) return;
 
     try {
-      await api.addComment({ postId, comment });
+      console.log("ID post yang akan dikomentari:", id);
+      await api.addComment({ id, comment });
+      console.log("berhasil menambah comment");
+
+      onCommentAdded(comment);
       setComment(""); // Kosongkan input setelah komentar ditambahkan
-      if (onCommentAdded) {
-        onCommentAdded(comment); // Callback untuk memperbarui daftar komentar
-      }
+      setSubmitted(true); // Update state to trigger the alert
     } catch (error) {
       console.error("Failed to add comment:", error.message);
     }
   };
+
+  useEffect(() => {
+    if (submitted) {
+      alert("Berhasil menambahkan komentar");
+      setSubmitted(false); // Reset submitted state
+    }
+  }, [submitted]);
 
   return (
     <form onSubmit={handleAddComment}>

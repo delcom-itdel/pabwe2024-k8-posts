@@ -140,8 +140,8 @@ const api = (() => {
     return responseJson.message;
   }
 
-  async function getAllPosts(isMe = 1) {
-    const response = await _fetchWithAuth(`${BASE_URL}/posts?is_me=${isMe}`, {
+  async function getAllPosts() {
+    const response = await _fetchWithAuth(`${BASE_URL}/posts`, {
       method: "GET",
     });
 
@@ -189,10 +189,14 @@ const api = (() => {
       },
       body: params,
     });
+
     const responseJson = await response.json();
+
     if (!responseJson.success) {
       throw new Error(responseJson.message);
     }
+
+    return responseJson;
   }
 
   async function addComment({ id, comment }) {
@@ -211,7 +215,7 @@ const api = (() => {
     }
   }
 
-  async function deleteComment(id) {
+  async function deleteComment({ id }) {
     const response = await _fetchWithAuth(`${BASE_URL}/posts/${id}/comments`, {
       method: "DELETE",
     });

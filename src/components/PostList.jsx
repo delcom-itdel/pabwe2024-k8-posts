@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import api from "../utils/api";
-import UpdatePostForm from "./UpdatePostForm"; // Import UpdatePostForm
-import "../styles/style.css";
+import api from "../utils/api"; // Import API untuk mengambil data postingan, add like, dan delete post
+import { Link } from "react-router-dom"; // Import Link untuk navigasi ke detail postingan
+import CommentForm from "./CommentForm";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
-  const [newComments, setNewComments] = useState({});
-  const [editingid, setEditingPostId] = useState(null); // State untuk menyimpan ID posting yang sedang diedit
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const fetchedPosts = await api.getAllPosts();
+        const fetchedPosts = await api.getAllPosts(1); // Ambil post milik user
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Gagal mengambil data postingan:", error.message);
@@ -20,142 +17,108 @@ const PostList = () => {
     };
     fetchPosts();
   }, []);
+  console.log(posts);
 
-  const handleLike = async (id, liked) => {
+  // Fungsi untuk menambahkan like pada post
+  const handleLike = async (postId, isLiked) => {
     try {
-      if (liked) {
-        await api.addLike({ postId: id, like: 0 });
-      } else {
-        await api.addLike({ postId: id, like: 1 });
-      }
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === id
-            ? {
-                ...post,
-                likes: liked ? post.likes - 1 : post.likes + 1,
-                liked: !liked,
-              }
-            : post
-        )
+      const likeStatus = isLiked ? 0 : 1; // 1 untuk like, 0 untuk unlike
+      await api.addLike({ id: postId, like: likeStatus });
+
+      // Update status like pada post di state
+      const updatedPosts = posts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              isLiked: !isLiked,
+              likes: isLiked
+                ? post.likes.filter((userId) => userId !== post.user_id) // Menghapus user_id jika unlike
+                : [...post.likes, post.user_id], // Menambahkan user_id jika like
+            }
+          : post
       );
+
+      // Set posts dengan panjang array likes yang diperbarui
+      setPosts(updatedPosts);
     } catch (error) {
-      console.error("Gagal mengubah like:", error.message);
+      alert(`Peringatan !\n${error.message}`);
     }
   };
 
-  const handleAddComment = async (id) => {
-    if (!newComments[id]) return; // Pastikan ada komentar yang ingin ditambahkan
+  // Fungsi untuk menghapus post
+  const handleDeletePost = async (postId) => {
     try {
-      await api.addComment({ postId: id, comment: newComments[id] });
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === id
-            ? {
-                ...post,
-                comments: [...post.comments, { comment: newComments[id] }],
-              }
-            : post
-        )
-      );
-      setNewComments({ ...newComments, [id]: "" });
+      await api.deletePost(postId); // Panggil API untuk menghapus post
+      alert("Post berhasil dihapus!");
+
+      // Update daftar post di state setelah dihapus
+      const updatedPosts = posts.filter((post) => post.id !== postId);
+      setPosts(updatedPosts);
     } catch (error) {
-      console.error("Gagal menambahkan komentar:", error.message);
+      alert(
+        `Peringatan !\n${error.message}\nAnda tidak diperbolehkan menghapus postingan orang lain`
+      );
     }
   };
-
-  const handleCommentChange = (id, commentText) => {
-    setNewComments({
-      ...newComments,
-      [id]: commentText,
-    });
-  };
-
-  const handleDeletePost = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this post?"
+  const handleCommentAdded = (id, newComment) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === id
+          ? { ...post, comments: [...post.comments, newComment] }
+          : post
+      )
     );
-    if (!confirmDelete) return;
-
-    try {
-      await api.deletePost(id);
-      setPosts(posts.filter((post) => post.id !== id));
-      alert("Post deleted successfully");
-    } catch (error) {
-      console.error("Gagal menghapus postingan:", error.message);
-    }
-  };
-
-  const handleEditPost = (id) => {
-    setEditingPostId(id); // Atur postId yang sedang diedit
   };
 
   return (
-    <div className="post-list-container">
-      {posts.map((post) => (
-        <div key={post.id} className="card mt-2">
-          <div className="card-body">
-            <h5 className="card-title">{post.title}</h5>
-            <img src={post.cover} alt="Post cover" className="img-fluid" />
-
-            {/* Link ke halaman detail ketika deskripsi ditekan */}
-            <Link to={`/posts/${post.id}`} className="post-description-link">
-              <p className="post-description">{post.description}</p>
-            </Link>
-
-            {/* Tombol Delete di bawah gambar */}
-            <button
-              onClick={() => handleDeletePost(post.id)}
-              className="btn btn-danger mt-2"
-            >
-              Delete Post
-            </button>
-            {/* Tampilkan form UpdatePostForm jika postId sedang diedit */}
-            {editingid === post.id && (
-              <div className="mt-3">
-                <UpdatePostForm
-                  id={post.id}
-                  currentDescription={post.description}
-                />
-              </div>
-            )}
-
-            {/* Tombol Like dan jumlah Like */}
-            <button
-              onClick={() => handleLike(post.id, post.liked)}
-              className="btn btn-primary mt-2"
-            >
-              {post.liked ? "Unlike" : "Like"} ({post.likes})
-            </button>
-
-            {/* Bagian komentar */}
-            <div className="comments-section mt-4">
-              <h6>Comments</h6>
-              <ul className="list-group">
-                {post.comments.map((comment, index) => (
-                  <li key={index} className="list-group-item">
-                    {comment.comment}
-                  </li>
-                ))}
-              </ul>
-
-              {/* Form untuk menambah komentar dengan tombol Submit */}
-              <textarea
-                className="form-control mt-2"
-                placeholder="Add a comment"
-                value={newComments[post.id] || ""}
-                onChange={(e) => handleCommentChange(post.id, e.target.value)}
-              />
-              <button
-                onClick={() => handleAddComment(post.id)}
-                className="btn btn-success mt-2"
+    <div>
+      <h3>All Posts</h3>
+      {posts.length === 0 ? (
+        <p>No posts available.</p>
+      ) : (
+        posts.map((post) => (
+          <div key={post.id} className="card mt-2">
+            <div className="card-body">
+              <img src={post.cover} alt="Post cover" width="100" />
+              <p>{post.description}</p>
+              <p>
+                <strong>Created at:</strong> {post.created_at}
+              </p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                width={18}
+                onClick={() => handleLike(post.id, post.isLiked)}
+                style={{
+                  cursor: "pointer",
+                  fill: post.isLiked ? "red" : "grey",
+                }} // Ubah warna hati
               >
-                Submit Comment
+                {!post.isLiked ? (
+                  <path d="M225.8 468.2l-2.5-2.3L48.1 303.2C17.4 274.7 0 234.7 0 192.8l0-3.3c0-70.4 50-130.8 119.2-144C158.6 37.9 198.9 47 231 69.6c9 6.4 17.4 13.8 25 22.3c4.2-4.8 8.7-9.2 13.5-13.3c3.7-3.2 7.5-6.2 11.5-9c0 0 0 0 0 0C313.1 47 353.4 37.9 392.8 45.4C462 58.6 512 119.1 512 189.5l0 3.3c0 41.9-17.4 81.9-48.1 110.4L288.7 465.9l-2.5 2.3c-8.2 7.6-19 11.9-30.2 11.9s-22-4.2-30.2-11.9zM239.1 145c-.4-.3-.7-.7-1-1.1l-17.8-20-.1-.1s0 0 0 0c-23.1-25.9-58-37.7-92-31.2C81.6 101.5 48 142.1 48 189.5l0 3.3c0 28.5 11.9 55.8 32.8 75.2L256 430.7 431.2 268c20.9-19.4 32.8-46.7 32.8-75.2l0-3.3c0-47.3-33.6-88-80.1-96.9c-34-6.5-69 5.4-92 31.2c0 0 0 0-.1 .1s0 0-.1 .1l-17.8 20c-.3 .4-.7 .7-1 1.1c-4.5 4.5-10.6 7-16.9 7s-12.4-2.5-16.9-7z" />
+                ) : (
+                  <path d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z" />
+                )}
+              </svg>
+              <span style={{ marginLeft: "8px" }}>{post.likes.length}</span>{" "}
+              {/* Menambahkan jarak dengan margin */}
+              <Link to={`/posts/${post.id}`} className="btn btn-link">
+                View Details
+              </Link>
+              {/* Tombol Delete Post */}
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                className="btn btn-danger"
+              >
+                Delete
               </button>
+              <div className="comment">
+                <CommentForm id={post.id} onCommentAdded={handleCommentAdded} />
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };

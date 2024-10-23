@@ -8,14 +8,13 @@ function PostDetail({ id }) {
   useEffect(() => {
     const fetchPostDetail = async () => {
       try {
-        console.log("Fetching post with ID:", id); // Debug: melihat apakah postId benar
         const fetchedPost = await api.getPostDetail(id);
-        console.log("Fetched Post Data:", fetchedPost); // Debug: melihat data yang diterima
-        setPost(fetchedPost); // Simpan data postingan ke state
-        setLoading(false); // Set loading ke false setelah data diterima
+        console.log("Fetched Post:", fetchedPost); // Debug response dari API
+        setPost(fetchedPost);
+        setLoading(false);
       } catch (error) {
-        console.error("Gagal mengambil detail postingan:", error.message);
-        setLoading(false); // Jika ada error, hentikan loading
+        console.error("Failed to fetch post detail:", error.message);
+        setLoading(false);
       }
     };
     fetchPostDetail();
@@ -31,8 +30,9 @@ function PostDetail({ id }) {
 
   return (
     <div>
-      <img src={post.cover} alt="Post cover" />
+      <img src={post.description} alt="Post cover" />
       <h2>{post.description}</h2>
+      <p>like: {post.like}</p>
       <p>Created at: {post.created_at}</p>
     </div>
   );

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import api from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 const AddNewPostForm = ({ onPostAdded }) => {
   const [title, setTitle] = useState("");
   const [cover, setCover] = useState(null);
   const [description, setDescription] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const handleAddPost = async (event) => {
     event.preventDefault();
@@ -18,6 +21,10 @@ const AddNewPostForm = ({ onPostAdded }) => {
       // Reset form setelah post berhasil ditambahkan
       setCover(null);
       setDescription("");
+
+      setTimeout(() => {
+        navigate("/"); // Navigasi setelah 3 detik
+      }, 1500); // Menunggu selama 3000ms (3 detik)
 
       // Memanggil callback setelah post berhasil ditambahkan
       if (onPostAdded) {

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import RegisterInput from "../components/RegisterInput";
+import RegisterInput from "../components/Registerinput";
 import { asyncSetIsAuthRegister } from "../states/isAuthRegister/action";
 function RegisterPage() {
   const navigate = useNavigate();
